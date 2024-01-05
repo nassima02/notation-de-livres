@@ -13,7 +13,7 @@ router.get('/', routeCtrl.getAllBook);
 router.get('/:id', routeCtrl.getOneBook);
 
 /* Middleware pour gérer les requêtes PUT vers "/api/books/:id" qui mis à jour le livre avec l’_id fourni. */
-router.put('/:id', auth, multer, routeCtrl.modifyBook);
+router.put('/:id', auth, multer, compressImage, routeCtrl.modifyBook);
 
 /* Middleware pour gérer les requêtes POST vers "/api/books" qui ajoute un livre. */
 router.post('/',auth,  multer, compressImage, routeCtrl.createBook);
