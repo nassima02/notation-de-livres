@@ -109,7 +109,7 @@ exports.modifyBook = (req, res, next) => {
 			return Book.updateOne({ _id: req.params.id }, { $set: bookObject }).then(() => book);
 		})
 		.then(() => {
-			// Delete the previous image
+			//supprimer l'image précédente
 			const imageFileName = previousImageUrl.split('/').pop();
 			const imagePath = `./uploads/${imageFileName}`;
 
@@ -122,4 +122,46 @@ exports.modifyBook = (req, res, next) => {
 			res.status(200).json({ message: 'Objet modifié avec succès' });
 		})
 		.catch((error) => res.status(400).json({ error }));
+};
+
+/*********************************************************
+ 				Noter un livre
+ * *******************************************************/
+exports.ratingBook = (req, res, next) => {
+	const rating = req.body.rating;
+	const userId = req.auth.userId;
+
+	// Rechercher le livre
+	Book.findOne({ _id: req.params.id })
+		.then((book) => {
+			if (!book) {
+				return res.status(404).json({ message: 'Objet non trouvé' });
+			}
+
+			// Vérifier si l'utilisateur a déjà noté ce livre
+			const userHasRated = book.ratings.some((ratingObj) => ratingObj.userId === userId);
+
+			if (userHasRated) {
+				return res.status(400).json({ message: 'Vous avez déjà noté ce livre' });
+			}
+
+			//Ajouter la nouvelle notation au tableau
+			const newRatingObj = { userId: userId, grade: rating };
+			book.ratings.push(newRatingObj);
+
+			// Mettre à jour la note moyenne
+			book.updateAverageRating();
+
+			// Mettre à jour le livre avec les nouvelles notations et la nouvelle note moyenne
+			book.save()
+				.then(() => {
+					res.status(200).json({ message: 'Notation mise à jour avec succès' });
+				})
+				.catch((error) => {
+					res.status(500).json({ message: 'Erreur lors de la mise à jour de la notation', error: error });
+				});
+		})
+		.catch((error) => {
+			res.status(500).json({ message: 'Erreur lors de la recherche du livre', error: error });
+		});
 };
