@@ -17,7 +17,10 @@ exports.signup = (req, res, next) => {
 		})
 		.catch(error => res.status(500).json({error}))
 };
-/** cette fonction permet de vérifier si un utilisateur existe dans la base de données et si le MDP transmis correspond à cet utilisateur**/
+/*******************************************************************
+ cette fonction permet de vérifier si un utilisateur existe dans la
+ base de données et si le MDP transmis correspond à cet utilisateur
+ *******************************************************************/
 
 exports.login = (req, res, next) => {
 	User.findOne({ email: req.body.email })

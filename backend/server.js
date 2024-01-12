@@ -1,10 +1,6 @@
-// Importation des modules nécessaires
-const http = require('http'); // Importation du module HTTP de Node.js
-const express = require('express');
-const app = require('./app'); // Importation du module d'application personnalisé (app)
+const http = require('http');
+const app = require('./app');
 
-/* La fonction normalizePort renvoie un port valide, qu'il soit fourni sous la forme
-d'un numéro ou d'une chaîne */
 const normalizePort = val => {
 	const port = parseInt(val);
 
@@ -17,16 +13,10 @@ const normalizePort = val => {
 	return false;
 };
 
-/*Utilisation de process.env.PORT si le port 4000 n'est pas disponible,
-puis configuration du port pour l'application */
 const port = normalizePort(process.env.PORT || '4000');
-app.set('port', port);
+app.set('port', port);//pour dire a l'application express sur quel port doit tourner
 
-// Ajout des répertoires statiques pour servir les fichiers publics
-// app.use(express.static('public'));
-
-/* La fonction errorHandler recherche les différentes erreurs et les gère de manière
-appropriée. Elle est ensuite enregistrée dans le serveur. */
+// Fonction de gestion des erreurs liées à la création du serveur
 const errorHandler = (error) => {
 	if (error.syscall !== 'listen') {
 		throw error;
@@ -47,18 +37,14 @@ const errorHandler = (error) => {
 	}
 };
 
-/* Création du serveur avec la méthode createServer qui prend comme argument
- la fonction qui sera appelée à chaque requête reçue par le serveur */
 const server = http.createServer(app);
-
-// Gestion des événements d'erreur et d'écoute du serveur
 server.on('error', errorHandler);
+
+// Événement 'listening' pour afficher les détails du serveur lorsqu'il écoute sur un port
 server.on('listening', () => {
 	const address = server.address();
 	const bind = typeof address === 'string' ? 'pipe ' + address : 'port ' + port;
 	console.log('Listening on ' + bind);
 });
-
-/* Enregistrement d'un écouteur d'événements qui consigne le port ou le canal nommé
-sur lequel le serveur s'exécute dans la console. */
+// Lancement du serveur pour écouter les connexions entrantes sur le port spécifié
 server.listen(port);

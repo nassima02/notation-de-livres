@@ -1,14 +1,17 @@
-// Importation des modules nécessaires
 const express = require('express'); // Importation du framework Express
-// const bodyParser = require ('body-parser');
 const mongoose = require('mongoose');
 const booksRoutes = require('./routes/routes')
 const userRoutes = require('./routes/user')
-const path = require('path');
+const { DB_URL } = require('./db_config/db_config');
+
 /* Connexion à la base de données MongoDB */
-	mongoose.connect('mongodb+srv://benasima:3ey1QdtY3ipoevBY@cluster0.eiaz3mk.mongodb.net/?retryWrites=true&w=majority')
-	.then(() => console.log('Connexion à MongoDB réussie !'))
-	.catch((error) => console.error('Connexion à MongoDB échouée !', error));
+	//mongoose.connect('mongodb+srv://benasima:3ey1QdtY3ipoevBY@cluster0.eiaz3mk.mongodb.net/?retryWrites=true&w=majority')
+async function connect() {
+	await mongoose.connect(DB_URL)
+}
+connect()
+		.then(() => console.log('Connexion à MongoDB réussie !'))
+		.catch((error) => console.error('Connexion à MongoDB échouée !', error));
 
 const app = express(); // Création d'une instance de l'application Express
 app.use(express.json());
@@ -22,7 +25,7 @@ app.use((req, res, next) => {
 	next();
 });
 
-// app.use(bodyParser.json());
+
 app.use('/api/books', booksRoutes);
 app.use('/api/auth', userRoutes);
 
