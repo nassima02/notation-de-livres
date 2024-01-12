@@ -1,9 +1,10 @@
 const Book = require("../models/Book");
 const fs = require('fs');
-const path = require('path');
+
 /*********************************************************
  				 Ajouter un livre
  * *******************************************************/
+
 exports.createBook = async (req, res, next) => {
 	const bookObject = JSON.parse(req.body.book)
 	delete bookObject._id;
@@ -13,7 +14,6 @@ exports.createBook = async (req, res, next) => {
 		...bookObject,
 		userId: req.auth.userId,
 		imageUrl: `${req.protocol}://${req.get('host')}/${req.compressedImagePath}`
-
 	})
 	book.save()
 		.then(() => {
@@ -23,7 +23,7 @@ exports.createBook = async (req, res, next) => {
 			res.status(400).json({error})
 		})
 };
-/*********************************************************
+/****************************************************
  				Obtenir un livre
  * *******************************************************/
 
@@ -32,6 +32,7 @@ exports.getOneBook = ('/:id', (req, res, next) => {
 		.then(book => res.status(200).json(book))
 		.catch(error => res.status(404).json({error}));
 });
+
 /*********************************************************
  				Obtenir des livres
  * *******************************************************/
@@ -127,6 +128,7 @@ exports.modifyBook = (req, res, next) => {
 /*********************************************************
  				Noter un livre
  * *******************************************************/
+
 exports.ratingBook = (req, res, next) => {
 	const rating = req.body.rating;
 	const userId = req.auth.userId;
@@ -155,7 +157,7 @@ exports.ratingBook = (req, res, next) => {
 			// Mettre à jour le livre avec les nouvelles notations et la nouvelle note moyenne
 			book.save()
 				.then(() => {
-					res.status(200).json({ message: 'Notation mise à jour avec succès' });
+					res.status(200).json(book);
 				})
 				.catch((error) => {
 					res.status(500).json({ message: 'Erreur lors de la mise à jour de la notation', error: error });
@@ -165,3 +167,21 @@ exports.ratingBook = (req, res, next) => {
 			res.status(500).json({ message: 'Erreur lors de la recherche du livre', error: error });
 		});
 };
+
+/*********************************************************
+       Obtenir les trois livres les mieux notés
+ * *******************************************************/
+
+exports.getBestBook  = (req, res, next) => {
+	Book.find()
+		.sort({ averageRating: -1 })// Tri des livres en fonction de la note moyenne dans l'ordre décroissant
+		.limit(3)
+		.then(books => {
+			res.status(200).json(books);       })
+		.catch(error => {
+			res.status(500).json({ error: 'Erreur lors de la récupération des livres les mieux notés' });
+		});
+};
+
+
+
