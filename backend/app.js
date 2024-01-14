@@ -25,7 +25,6 @@ app.use((req, res, next) => {
 	next();
 });
 
-
 app.use('/api/books', booksRoutes);
 app.use('/api/auth', userRoutes);
 
